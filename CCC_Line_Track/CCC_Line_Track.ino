@@ -54,6 +54,7 @@ void determine_movement(int width, int height)
   if (width < 175) 
   {
     go_Advance();
+    delay(height);
 
   }
   else if(width > 175)
