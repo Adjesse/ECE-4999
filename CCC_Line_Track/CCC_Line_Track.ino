@@ -8,7 +8,14 @@
 
 // This is the main Pixy object 
 Pixy2 pixy;
-
+int turn_count = 0;
+void go_Advance(void);
+void go_Left(int t=0);
+void go_Right(int t=0);
+void go_Back(int t=0);
+void stop_Stop();
+void set_Motorspeed(int speed_L,int speed_R);
+void init_GPIO();
 void setup()
 {
   Serial.begin(9600);
@@ -31,16 +38,17 @@ void loop()
     Serial.println(pixy.ccc.numBlocks);
     for (i=0; i<pixy.ccc.numBlocks; i++)
     {
-      Serial.print("  block ");
-      Serial.print(i);
-      Serial.print(": ");
-      pixy.ccc.blocks[i].print();
-      Serial.println();
-      Serial.print("Width: ");
-      Serial.println(pixy.ccc.blocks[i].m_width);
+      determine_movement(pixy.ccc.blocks[i].m_width, pixy.ccc.blocks[i].m_height);
+      // Serial.print("  block ");
+      // Serial.print(i);
+      // Serial.print(": ");
+      // pixy.ccc.blocks[i].print();
+      // Serial.println();
+      // Serial.print("Width: ");
+      // Serial.println(pixy.ccc.blocks[i].m_width);
 
-      Serial.print("Angle: ");
-      Serial.println(pixy.ccc.blocks[i].m_angle);
+      // Serial.print("Angle: ");
+      // Serial.println(pixy.ccc.blocks[i].m_angle);
       
 
     }
@@ -59,6 +67,16 @@ void determine_movement(int width, int height)
   }
   else if(width > 175)
   {
+    if (turn_count == 0 || turn_count == 5 )
+    {
+      go_Right(2000);
+    }
+    else
+    {
+      go_Left(2000);
+    }
+
+    turn_count++;
     
   }
 
