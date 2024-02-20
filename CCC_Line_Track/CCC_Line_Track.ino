@@ -39,10 +39,10 @@ void loop()
     for (i=0; i<pixy.ccc.numBlocks; i++)
     {
       determine_movement(pixy.ccc.blocks[i].m_width, pixy.ccc.blocks[i].m_height);
-      // Serial.print("  block ");
-      // Serial.print(i);
-      // Serial.print(": ");
-      // pixy.ccc.blocks[i].print();
+      Serial.print("  block ");
+      Serial.print(i);
+      Serial.print(": ");
+      pixy.ccc.blocks[i].print();
       // Serial.println();
       // Serial.print("Width: ");
       // Serial.println(pixy.ccc.blocks[i].m_width);
@@ -59,8 +59,10 @@ void loop()
 
 void determine_movement(int width, int height)
 {
+
   if (width < 175) 
   {
+    Serial.println("Forward");
     go_Advance();
     delay(height);
 
@@ -69,10 +71,12 @@ void determine_movement(int width, int height)
   {
     if (turn_count == 0 || turn_count == 5 )
     {
+      Serial.println("Right");
       go_Right(2000);
     }
     else
     {
+      Serial.println("Left");
       go_Left(2000);
     }
 
