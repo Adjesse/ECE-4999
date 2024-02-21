@@ -23,6 +23,7 @@ void setup()
   
   pixy.init();
   init_GPIO();
+  pixy.changeProg("CCC");
 }
 
 void loop()
@@ -60,19 +61,22 @@ void loop()
 void determine_movement(int width, int height)
 {
 
-  if (width < 175) 
+  if (width < 300) 
   {
     Serial.println("Forward");
     go_Advance();
     delay(height);
 
   }
-  else if(width > 175)
+  else if(width > 300)
   {
     if (turn_count == 0 || turn_count == 5 )
     {
       Serial.println("Right");
       go_Right(2000);
+      go_Advance();
+      delay(1000);
+
     }
     else
     {
