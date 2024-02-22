@@ -8,6 +8,8 @@
 
 // This is the main Pixy object 
 Pixy2 pixy;
+int left_turn_count = 0;
+int right_turn_count = 0;
 int turn_count = 0;
 void go_Advance(void);
 void go_Left(int t=0);
@@ -35,37 +37,45 @@ void loop()
   // If there are detect blocks, print them!
   if (pixy.ccc.numBlocks)
   {
-    Serial.print("Detected ");
-    Serial.println(pixy.ccc.numBlocks);
-    for (i=0; i<pixy.ccc.numBlocks; i++)
-    {
-      determine_movement(pixy.ccc.blocks[i].m_width, pixy.ccc.blocks[i].m_height);
-      Serial.print("  block ");
-      Serial.print(i);
-      Serial.print(": ");
-      pixy.ccc.blocks[i].print();
-      // Serial.println();
-      // Serial.print("Width: ");
-      // Serial.println(pixy.ccc.blocks[i].m_width);
+    // Serial.print("Detected ");
+    // Serial.println(pixy.ccc.numBlocks);
+    determine_movement(pixy.ccc.blocks[0].m_width, pixy.ccc.blocks[0].m_height);
+    Serial.print("Width: ");
+    Serial.println(pixy.ccc.blocks[0].m_width);
+    Serial.print("Height: ");
+    Serial.println(pixy.ccc.blocks[0].m_height);
+  }
+  //   for (i=0; i<pixy.ccc.numBlocks; i++)
+  //   {
+  //     determine_movement(pixy.ccc.blocks[i].m_width, pixy.ccc.blocks[i].m_height);
+  //     // Serial.print("  block ");
+  //     // Serial.print(i);
+  //     // Serial.print(": ");
+  //     // pixy.ccc.blocks[i].print();
+  //     // // Serial.println();
+  //     // Serial.print("Width: ");
+  //     // Serial.println(pixy.ccc.blocks[i].m_width);
 
-      // Serial.print("Angle: ");
-      // Serial.println(pixy.ccc.blocks[i].m_angle);
+  //     // Serial.print("Angle: ");
+  //     // Serial.println(pixy.ccc.blocks[i].m_angle);
       
 
-    }
-  } 
+  //   }
+  // } 
 
-  delay(1000); 
+  delay(500); 
 }
 
 void determine_movement(int width, int height)
 {
 
-  if (width < 300) 
+  if (width < 200) 
   {
     Serial.println("Forward");
     go_Advance();
-    delay(height);
+    delay(10);
+    right_turn_count = 0;
+    left_turn_count = 0;
 
   }
   else if(width > 300)
@@ -73,18 +83,21 @@ void determine_movement(int width, int height)
     if (turn_count == 0 || turn_count == 5 )
     {
       Serial.println("Right");
-      go_Right(2000);
-      go_Advance();
-      delay(1000);
+      go_Right(10);
+      right_turn_count++;
 
     }
     else
     {
       Serial.println("Left");
-      go_Left(2000);
+      go_Left(10);
+      left_turn_count++;
     }
 
-    turn_count++;
+    if(right_turn_count > 3 || left_turn_count > 3)
+    { 
+      turn_count++;
+    }
     
   }
 
@@ -98,8 +111,8 @@ void go_Advance(void)  //Forward
   digitalWrite(RightMotorDirPin2,LOW);
   digitalWrite(LeftMotorDirPin1,HIGH);
   digitalWrite(LeftMotorDirPin2,LOW);
-  analogWrite(speedPinL,255 );
-  analogWrite(speedPinR,255);
+  analogWrite(speedPinL,120 );
+  analogWrite(speedPinR,120);
 }
 void go_Left(int t=0)  //Turn left
 {
@@ -107,8 +120,8 @@ void go_Left(int t=0)  //Turn left
   digitalWrite(RightMotorDirPin2,LOW);
   digitalWrite(LeftMotorDirPin1,LOW);
   digitalWrite(LeftMotorDirPin2,HIGH);
-  analogWrite(speedPinL,255);
-  analogWrite(speedPinR,255);
+  analogWrite(speedPinL,120);
+  analogWrite(speedPinR,120);
   delay(t);
 }
 void go_Right(int t=0)  //Turn right
@@ -117,8 +130,8 @@ void go_Right(int t=0)  //Turn right
   digitalWrite(RightMotorDirPin2,HIGH);
   digitalWrite(LeftMotorDirPin1,HIGH);
   digitalWrite(LeftMotorDirPin2,LOW);
-  analogWrite(speedPinL,255);
-  analogWrite(speedPinR,255);
+  analogWrite(speedPinL,120);
+  analogWrite(speedPinR,120);
   delay(t);
 }
 void go_Back(int t=0)  //Reverse
@@ -127,8 +140,8 @@ void go_Back(int t=0)  //Reverse
   digitalWrite(RightMotorDirPin2,HIGH);
   digitalWrite(LeftMotorDirPin1,LOW);
   digitalWrite(LeftMotorDirPin2,HIGH);
-  analogWrite(speedPinL,255);
-  analogWrite(speedPinR,255);
+  analogWrite(speedPinL,120);
+  analogWrite(speedPinR,120);
   delay(t);
 }
 void stop_Stop()    //Stop
