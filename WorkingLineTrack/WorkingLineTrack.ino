@@ -40,22 +40,46 @@ void loop()
   {
     // Serial.print("Detected ");
     // Serial.println(pixy.ccc.numBlocks);
-    align_camera(pixy.ccc.blocks[0].m_x, pixy.ccc.blocks[0].m_y);
-    delay(50);
-    //determine_movement(pixy.ccc.blocks[0].m_width, pixy.ccc.blocks[0].m_height);
-    // Serial.print("Width: ");
-    // Serial.println(pixy.ccc.blocks[0].m_width);
-    // Serial.print("Height: ");
-    // Serial.println(pixy.ccc.blocks[0].m_height);
-
     Serial.print("Center X: ");
     Serial.println(pixy.ccc.blocks[0].m_x);
+    Serial.print("Width: ");
+    Serial.println(pixy.ccc.blocks[0].m_width);
+    if (pixy.ccc.blocks[0].m_width < 200) 
+    {
+      //Serial.println("Straight: ");
+      align_camera(pixy.ccc.blocks[0].m_x, pixy.ccc.blocks[0].m_y);
+    }
+    else if(pixy.ccc.blocks[0].m_width > 200)
+    {
+      if(pixy.ccc.blocks[0].m_x > 150)
+      {
+        //Serial.println("Turn Right: ");
+        go_Right(1000);
+        go_Advance();
+        delay(500); 
+
+
+      }
+      else if(pixy.ccc.blocks[0].m_x < 150)
+      {
+        //Serial.println("Turn Left: ");
+        go_Left(1000);
+        go_Advance();
+        delay(500); 
+
+      }
+
+    }
+
+    //determine_movement(pixy.ccc.blocks[0].m_width, pixy.ccc.blocks[0].m_height);
+    // Serial.print("Height: ");
+    // Serial.println(pixy.ccc.blocks[0].m_height);
     // Serial.print("Center Y: ");
     // Serial.println(pixy.ccc.blocks[0].m_y);
   }
   else 
   {
-    Serial.println("Stop");
+    //Serial.println("Stop");
     stop_Stop();
   }
   //   for (i=0; i<pixy.ccc.numBlocks; i++)
@@ -76,51 +100,9 @@ void loop()
   //   }
   // } 
 
-  delay(500); 
+  //delay(50); 
 }
 
-void determine_movement(int width, int height)
-{
-
-  if (width < 200) 
-  {
-    Serial.println("Forward");
-    go_Advance();
-    delay(5);
-    right_turn_count = 0;
-    left_turn_count = 0;
-
-  }
-  else if(width > 300)
-  {
-    if (turn_count == 0 || turn_count == 5 )
-    {
-      Serial.println("Right");
-      go_Right(5);
-      right_turn_count++;
-
-    }
-    else
-    {
-      Serial.println("Left");
-      go_Left(5);
-      left_turn_count++;
-    }
-
-    if(right_turn_count > 3 || left_turn_count > 3)
-    { 
-      turn_count++;
-    }
-    
-  }
-  else
-  {
-    stop_Stop();
-
-  }
-
-
-}
 
 void align_camera(int x, int y)
 {

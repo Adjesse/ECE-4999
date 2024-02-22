@@ -30,94 +30,13 @@ void setup()
 }
 
 void loop()
-{ 
-  int i; 
-  // grab blocks!
-  pixy.ccc.getBlocks();
-  
-  // If there are detect blocks, print them!
-  if (pixy.ccc.numBlocks)
-  {
-    // Serial.print("Detected ");
-    // Serial.println(pixy.ccc.numBlocks);
-    align_camera(pixy.ccc.blocks[0].m_x, pixy.ccc.blocks[0].m_y);
-    delay(50);
-    //determine_movement(pixy.ccc.blocks[0].m_width, pixy.ccc.blocks[0].m_height);
-    // Serial.print("Width: ");
-    // Serial.println(pixy.ccc.blocks[0].m_width);
-    // Serial.print("Height: ");
-    // Serial.println(pixy.ccc.blocks[0].m_height);
-
-    Serial.print("Center X: ");
-    Serial.println(pixy.ccc.blocks[0].m_x);
-    // Serial.print("Center Y: ");
-    // Serial.println(pixy.ccc.blocks[0].m_y);
-  }
-  else 
-  {
-    Serial.println("Stop");
-    stop_Stop();
-  }
-  //   for (i=0; i<pixy.ccc.numBlocks; i++)
-  //   {
-  //     determine_movement(pixy.ccc.blocks[i].m_width, pixy.ccc.blocks[i].m_height);
-  //     // Serial.print("  block ");
-  //     // Serial.print(i);
-  //     // Serial.print(": ");
-  //     // pixy.ccc.blocks[i].print();
-  //     // // Serial.println();
-  //     // Serial.print("Width: ");
-  //     // Serial.println(pixy.ccc.blocks[i].m_width);
-
-  //     // Serial.print("Angle: ");
-  //     // Serial.println(pixy.ccc.blocks[i].m_angle);
-      
-
-  //   }
-  // } 
-
-  delay(500); 
-}
-
-void determine_movement(int width, int height)
 {
-
-  if (width < 200) 
-  {
-    Serial.println("Forward");
-    go_Advance();
-    delay(5);
-    right_turn_count = 0;
-    left_turn_count = 0;
-
-  }
-  else if(width > 300)
-  {
-    if (turn_count == 0 || turn_count == 5 )
-    {
-      Serial.println("Right");
-      go_Right(5);
-      right_turn_count++;
-
-    }
-    else
-    {
-      Serial.println("Left");
-      go_Left(5);
-      left_turn_count++;
-    }
-
-    if(right_turn_count > 3 || left_turn_count > 3)
-    { 
-      turn_count++;
-    }
-    
-  }
-  else
-  {
-    stop_Stop();
-
-  }
+  go_Left(2000);
+  stop_Stop();
+  delay(1000);
+  go_Right(2000);
+  stop_Stop();
+  delay(1000);
 
 
 }
@@ -162,20 +81,20 @@ void go_Left(int t=0)  //Turn left
 {
   digitalWrite(RightMotorDirPin1, HIGH);
   digitalWrite(RightMotorDirPin2,LOW);
-  digitalWrite(LeftMotorDirPin1,LOW);
-  digitalWrite(LeftMotorDirPin2,HIGH);
-  analogWrite(speedPinL,120);
-  analogWrite(speedPinR,120);
+  digitalWrite(LeftMotorDirPin1,HIGH);
+  digitalWrite(LeftMotorDirPin2,LOW);
+  analogWrite(speedPinL,255);
+  analogWrite(speedPinR,100);
   delay(t);
 }
 void go_Right(int t=0)  //Turn right
 {
-  digitalWrite(RightMotorDirPin1, LOW);
-  digitalWrite(RightMotorDirPin2,HIGH);
+  digitalWrite(RightMotorDirPin1, HIGH);
+  digitalWrite(RightMotorDirPin2,LOW);
   digitalWrite(LeftMotorDirPin1,HIGH);
   digitalWrite(LeftMotorDirPin2,LOW);
-  analogWrite(speedPinL,120);
-  analogWrite(speedPinR,120);
+  analogWrite(speedPinL,0);
+  analogWrite(speedPinR,255);
   delay(t);
 }
 void go_Back(int t=0)  //Reverse
