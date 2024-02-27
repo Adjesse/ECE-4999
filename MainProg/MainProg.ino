@@ -7,12 +7,16 @@
 #define LeftMotorDirPin1  7    //Left Motor direction pin 1 to MODEL-X IN3 
 #define LeftMotorDirPin2  8   //Left Motor direction pin 1 to MODEL-X IN4 
 #define sensor A0
+#define ServoUp 
+#define ServoDown 
 
 // This is the main Pixy object 
 Pixy2 pixy;
+//Global Variables
 int left_turn_count = 0;
 int right_turn_count = 0;
 int turn_count = 0;
+//Function Declarations
 void go_Advance(void);
 void go_Left(int t=0);
 void go_Right(int t=0);
@@ -22,6 +26,7 @@ void stop_Stop();
 void set_Motorspeed(int speed_L,int speed_R);
 void init_GPIO();
 int readDistance(int sensor);
+void lineTrack(Pixy2 pixy);
 void setup()
 {
   Serial.begin(9600);
@@ -34,82 +39,14 @@ void setup()
 
 void loop()
 { 
-  int i; 
-  // grab blocks!
-  pixy.ccc.getBlocks();
+ lineTrack(pixy);
+ go_Advance();
+ delay(1000);
+ stop_Stop();
+
+ 
+
   
-  // If there are detect blocks, print them!
-  if (pixy.ccc.numBlocks)
-  {
-    // Serial.print("Detected ");
-    // Serial.println(pixy.ccc.numBlocks);
-    Serial.print("Center X: ");
-    Serial.println(pixy.ccc.blocks[0].m_x);
-    Serial.print("Width: ");
-    Serial.println(pixy.ccc.blocks[0].m_width);
-    if (pixy.ccc.blocks[0].m_width < 200) 
-    {
-      //Serial.println("Straight: ");
-      align_camera(pixy.ccc.blocks[0].m_x, pixy.ccc.blocks[0].m_y);
-    }
-    else if(pixy.ccc.blocks[0].m_width > 200)
-    {
-      if(pixy.ccc.blocks[0].m_x > 150)
-      {
-        //Serial.println("Turn Right: ");
-        go_Right(900);
-        go_Advance();
-        delay(700); 
-        right_turn_count++;
-
-
-      }
-      else if(pixy.ccc.blocks[0].m_x < 150)
-      {
-        //Serial.println("Turn Left: ");
-        go_Left(900);
-        go_Advance();
-        delay(700); 
-        left_turn_count++;
-
-      }
-
-    }
-
-    //determine_movement(pixy.ccc.blocks[0].m_width, pixy.ccc.blocks[0].m_height);
-    // Serial.print("Height: ");
-    // Serial.println(pixy.ccc.blocks[0].m_height);
-    // Serial.print("Center Y: ");
-    // Serial.println(pixy.ccc.blocks[0].m_y);
-  }
-  else 
-  {
-    //Serial.println("Stop");
-    stop_Stop();
-    if(right_turn_count > 4 || left_turn_count > 4)
-    {
-      go_Back(2000);
-    }
-  }
-  //   for (i=0; i<pixy.ccc.numBlocks; i++)
-  //   {
-  //     determine_movement(pixy.ccc.blocks[i].m_width, pixy.ccc.blocks[i].m_height);
-  //     // Serial.print("  block ");
-  //     // Serial.print(i);
-  //     // Serial.print(": ");
-  //     // pixy.ccc.blocks[i].print();
-  //     // // Serial.println();
-  //     // Serial.print("Width: ");
-  //     // Serial.println(pixy.ccc.blocks[i].m_width);
-
-  //     // Serial.print("Angle: ");
-  //     // Serial.println(pixy.ccc.blocks[i].m_angle);
-      
-
-  //   }
-  // } 
-
-  //delay(50); 
 }
 
 
@@ -211,5 +148,57 @@ int readDistance(int sensor)
   float volts = analogRead(sensor)*0.0048828125;  // value from sensor * (5/1024)
   int distance = 13*pow(volts, -1); // worked out from datasheet graph
   return distance;
+
+}
+
+void lineTrack(Pixy2 pixy)
+{
+  // grab blocks!
+  pixy.ccc.getBlocks();
+  
+  // If there are detect blocks, print them!
+  if (pixy.ccc.numBlocks)
+  {
+    // Serial.print("Detected ");
+    // Serial.println(pixy.ccc.numBlocks);
+    Serial.print("Center X: ");
+    Serial.println(pixy.ccc.blocks[0].m_x);
+    Serial.print("Width: ");
+    Serial.println(pixy.ccc.blocks[0].m_width);
+    if (pixy.ccc.blocks[0].m_width < 200) 
+    {
+      //Serial.println("Straight: ");
+      align_camera(pixy.ccc.blocks[0].m_x, pixy.ccc.blocks[0].m_y);
+    }
+    else if(pixy.ccc.blocks[0].m_width > 200)
+    {
+      if(pixy.ccc.blocks[0].m_x > 150)
+      {
+        //Serial.println("Turn Right: ");
+        go_Right(900);
+        go_Advance();
+        delay(700); 
+        right_turn_count++;
+      }
+      else if(pixy.ccc.blocks[0].m_x < 150)
+      {
+        //Serial.println("Turn Left: ");
+        go_Left(900);
+        go_Advance();
+        delay(700); 
+        left_turn_count++;
+
+      }
+    }
+  }
+  else 
+  {
+    //Serial.println("Stop");
+    stop_Stop();
+    if(right_turn_count > 4 || left_turn_count > 4)
+    {
+      go_Back(2000);
+    }
+  }
 
 }
