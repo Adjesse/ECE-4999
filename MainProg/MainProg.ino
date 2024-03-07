@@ -6,12 +6,14 @@
 #define speedPinL 6    // Left PWM pin connect MODEL-X ENB
 #define LeftMotorDirPin1  7    //Left Motor direction pin 1 to MODEL-X IN3 
 #define LeftMotorDirPin2  8   //Left Motor direction pin 1 to MODEL-X IN4 
-#define sensor A0
+#define front_sensor A0
+#define back_sensor A1
 #define ServoUp 
 #define ServoDown 
 
 // This is the main Pixy object 
 Pixy2 pixy;
+Servo myServo;  // Create a servo object
 //Global Variables
 int left_turn_count = 0;
 int right_turn_count = 0;
@@ -31,6 +33,8 @@ void setup()
 {
   Serial.begin(9600);
   Serial.print("Starting...\n");
+  pinMode(3,OUTPUT);
+  myServo.attach(3);  // Attach the servo to pin 3
   
   pixy.init();
   init_GPIO();
@@ -39,11 +43,18 @@ void setup()
 
 void loop()
 { 
- lineTrack(pixy);
- go_Advance();
+ //lineTrack(pixy);
+ Serial.print("Front: ");
+ Serial.println(readDistance(A0));
+ Serial.print("Back: ");
+ Serial.println(readDistance(A1));
  delay(1000);
- stop_Stop();
 
+
+ //myServo.write(15);
+ //delay(7000); // Wait for 1 second
+ //myServo.write(180); // Adjust the angle as needed
+ //delay(7000); // Wait for 1 seco
  
 
   
@@ -161,10 +172,10 @@ void lineTrack(Pixy2 pixy)
   {
     // Serial.print("Detected ");
     // Serial.println(pixy.ccc.numBlocks);
-    Serial.print("Center X: ");
-    Serial.println(pixy.ccc.blocks[0].m_x);
-    Serial.print("Width: ");
-    Serial.println(pixy.ccc.blocks[0].m_width);
+    //Serial.print("Center X: ");
+    //Serial.println(pixy.ccc.blocks[0].m_x);
+    //Serial.print("Width: ");
+    //Serial.println(pixy.ccc.blocks[0].m_width);
     if (pixy.ccc.blocks[0].m_width < 200) 
     {
       //Serial.println("Straight: ");
