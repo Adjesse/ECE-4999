@@ -1,18 +1,23 @@
 #include <Pixy2.h>
 #include <Servo.h>
 #include "movement.hpp"
+#include <ezButton.h>
 #define front_sensor A0
 #define back_sensor A1
-#define ServoUp 
-#define ServoDown 
+#define ServoUpPin 3
+#define ServoDownPin 4
+#define ServoDownLimit 2
 
 // This is the main Pixy object 
 Pixy2 pixy;
-Servo myServo;  // Create a servo object
+Servo ServoUp;  // Create a servo object
+Servo ServoDown;  // Create a servo object
+ezButton limitSwitch(ServoDownLimit);
 //Global Variables
 int left_turn_count = 0;
 int right_turn_count = 0;
 int turn_count = 0;
+int phase1 = 1;
 //Function Declarations
 int readDistance(int sensor);
 void lineTrack(Pixy2 pixy);
@@ -20,33 +25,69 @@ void setup()
 {
   Serial.begin(9600);
   Serial.print("Starting...\n");
-  pinMode(3,OUTPUT);
-  myServo.attach(3);  // Attach the servo to pin 3
+  pinMode(ServoUpPin,OUTPUT);
+  pinMode(ServoDownPin,OUTPUT);
+  //pinMode(ServoDownLimit,INPUT);
+  ServoUp.attach(ServoUpPin);  // Attach the servo
+  ServoDown.attach(ServoDownPin);  // Attach the servo
+  limitSwitch.setDebounceTime(50);
   
-  pixy.init();
+  //pixy.init();
   init_GPIO();
-  pixy.changeProg("CCC");
+  //pixy.changeProg("CCC");
+  //ServoDown.write(180);
+  //delay(1000);
+  //ServoDown.write(90);
 }
 
 void loop()
 { 
  //lineTrack(pixy);
  Serial.print("Front: ");
- Serial.println(readDistance(A0));
+ Serial.println(readDistance(front_sensor));
  Serial.print("Back: ");
- Serial.println(readDistance(A1));
+ Serial.println(readDistance(back_sensor));
  delay(1000);
 
+ 
 
+
+while(phase1)
+{
+  // limitSwitch.loop();
+  // Serial.println(limitSwitch.isPressed());
+  // delay(1000);
+
+  
+  if(readDistance(front_sensor) > 20)
+  {
+    int descent = 1;
+    while(descent)
+    { 
+      limitSwitch.loop();
+      ServoDown.write(15);
+      Serial.println(limitSwitch.isPressed());
+
+      int state = limitSwitch.getState();
+      if(state == LOW)
+      {
+        ServoDown.write(90);
+        descent = 0;
+        phase1 = 0;
+      } 
+  }
+  }
+}
+}  
+  
+  
+
+// }
  //myServo.write(15);
  //delay(7000); // Wait for 1 second
  //myServo.write(180); // Adjust the angle as needed
  //delay(7000); // Wait for 1 seco
  
-
-  
-}
-
 
 void align_camera(int x, int y)
 {

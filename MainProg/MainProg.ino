@@ -13,7 +13,8 @@
 
 // This is the main Pixy object 
 Pixy2 pixy;
-Servo myServo;  // Create a servo object
+Servo ServoUp;  // Create a servo object
+Servo ServoDown;  // Create a servo object
 //Global Variables
 int left_turn_count = 0;
 int right_turn_count = 0;
@@ -33,8 +34,10 @@ void setup()
 {
   Serial.begin(9600);
   Serial.print("Starting...\n");
-  pinMode(3,OUTPUT);
-  myServo.attach(3);  // Attach the servo to pin 3
+  pinMode(ServoUp,OUTPUT);
+  pinMode(ServoDown,OUTPUT);
+  myServo.attach(ServoUp);  // Attach the servo
+  myServo.attach(ServoDown);  // Attach the servo
   
   pixy.init();
   init_GPIO();
