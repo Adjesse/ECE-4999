@@ -7,17 +7,22 @@
 #define ServoUpPin 3
 #define ServoDownPin 4
 #define ServoDownLimit 2
+#define ServoUpLimit 22
+
 
 // This is the main Pixy object 
 Pixy2 pixy;
 Servo ServoUp;  // Create a servo object
 Servo ServoDown;  // Create a servo object
-ezButton limitSwitch(ServoDownLimit);
+ezButton limitSwitch_Cdown(ServoDownLimit);
+ezButton limitSwitch_Bdown(ServoUpLimit);
 //Global Variables
 int left_turn_count = 0;
 int right_turn_count = 0;
 int turn_count = 0;
 int phase1 = 1;
+int phase2 = 0;
+int phase3 = 0;
 //Function Declarations
 int readDistance(int sensor);
 void lineTrack(Pixy2 pixy);
@@ -30,7 +35,8 @@ void setup()
   //pinMode(ServoDownLimit,INPUT);
   ServoUp.attach(ServoUpPin);  // Attach the servo
   ServoDown.attach(ServoDownPin);  // Attach the servo
-  limitSwitch.setDebounceTime(50);
+  limitSwitch_Cdown.setDebounceTime(50);
+  limitSwitch_Bdown.setDebounceTime(50);
   
   //pixy.init();
   init_GPIO();
@@ -43,11 +49,6 @@ void setup()
 void loop()
 { 
  //lineTrack(pixy);
- Serial.print("Front: ");
- Serial.println(readDistance(front_sensor));
- Serial.print("Back: ");
- Serial.println(readDistance(back_sensor));
- delay(1000);
 
  
 
@@ -57,27 +58,65 @@ while(phase1)
   // limitSwitch.loop();
   // Serial.println(limitSwitch.isPressed());
   // delay(1000);
+  Serial.print("Front: ");
+  Serial.println(readDistance(front_sensor));
+  Serial.print("Back: ");
+  Serial.println(readDistance(back_sensor));
+  delay(1000);
 
   
   if(readDistance(front_sensor) > 20)
   {
+
     int descent = 1;
     while(descent)
     { 
-      limitSwitch.loop();
+      limitSwitch_Cdown.loop();
       ServoDown.write(15);
-      Serial.println(limitSwitch.isPressed());
+      Serial.println(limitSwitch_Cdown.isPressed());
 
-      int state = limitSwitch.getState();
+      int state = limitSwitch_Cdown.getState();
       if(state == LOW)
       {
         ServoDown.write(90);
         descent = 0;
         phase1 = 0;
+        phase2 = 1;
       } 
   }
   }
 }
+while(phase2)
+{
+  if(readDistance(back_sensor) > 20)
+  {
+    //stop_Stop();
+    phase2 = 0;
+    phase3 = 1;
+  }
+  else
+  {
+    //go_Advance();
+  }
+}
+while(phase3)
+{
+  limitSwitch_Bdown.loop();
+  ServoUp.write(15);
+  Serial.println(limitSwitch_Bdown.isPressed());
+
+  int state = limitSwitch_Bdown.getState();
+  if(state == LOW)
+  {
+    ServoUp.write(90);
+    phase3 = 0;
+  } 
+}
+
+
+
+
+
 }  
   
   
