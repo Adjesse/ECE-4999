@@ -34,10 +34,10 @@ void setup()
 {
   Serial.begin(9600);
   Serial.print("Starting...\n");
-  pinMode(ServoUp,OUTPUT);
-  pinMode(ServoDown,OUTPUT);
-  myServo.attach(ServoUp);  // Attach the servo
-  myServo.attach(ServoDown);  // Attach the servo
+  //pinMode(ServoUp,OUTPUT);
+  //pinMode(ServoDown,OUTPUT);
+  //myServo.attach(ServoUp);  // Attach the servo
+  //myServo.attach(ServoDown);  // Attach the servo
   
   pixy.init();
   init_GPIO();
@@ -46,19 +46,22 @@ void setup()
 
 void loop()
 { 
- //lineTrack(pixy);
- Serial.print("Front: ");
- Serial.println(readDistance(A0));
- Serial.print("Back: ");
- Serial.println(readDistance(A1));
- delay(1000);
-
-
- //myServo.write(15);
- //delay(7000); // Wait for 1 second
- //myServo.write(180); // Adjust the angle as needed
- //delay(7000); // Wait for 1 seco
  
+  go_Advance();
+  delay(2000);
+
+  stop_Stop();
+  delay(500);
+
+  go_Left(2000);
+
+  stop_Stop();
+  delay(500);
+
+  go_Right(2000);
+
+  stop_Stop();
+  delay(500);
 
   
 }
@@ -97,8 +100,8 @@ void go_Advance(void)  //Forward
   digitalWrite(RightMotorDirPin2,LOW);
   digitalWrite(LeftMotorDirPin1,HIGH);
   digitalWrite(LeftMotorDirPin2,LOW);
-  analogWrite(speedPinL,120 );
-  analogWrite(speedPinR,120);
+  analogWrite(speedPinL,255 );
+  analogWrite(speedPinR,255);
 }
 void go_Left(int t=0)  //Turn left
 {
@@ -106,8 +109,8 @@ void go_Left(int t=0)  //Turn left
   digitalWrite(RightMotorDirPin2,LOW);
   digitalWrite(LeftMotorDirPin1,LOW);
   digitalWrite(LeftMotorDirPin2,HIGH);
-  analogWrite(speedPinL,120);
-  analogWrite(speedPinR,120);
+  analogWrite(speedPinL,255);
+  analogWrite(speedPinR,255);
   delay(t);
 }
 void go_Right(int t=0)  //Turn right
@@ -116,8 +119,8 @@ void go_Right(int t=0)  //Turn right
   digitalWrite(RightMotorDirPin2,HIGH);
   digitalWrite(LeftMotorDirPin1,HIGH);
   digitalWrite(LeftMotorDirPin2,LOW);
-  analogWrite(speedPinL,120);
-  analogWrite(speedPinR,120);
+  analogWrite(speedPinL,255);
+  analogWrite(speedPinR,255);
   delay(t);
 }
 void go_Back(int t=0)  //Reverse
@@ -126,8 +129,8 @@ void go_Back(int t=0)  //Reverse
   digitalWrite(RightMotorDirPin2,HIGH);
   digitalWrite(LeftMotorDirPin1,LOW);
   digitalWrite(LeftMotorDirPin2,HIGH);
-  analogWrite(speedPinL,120);
-  analogWrite(speedPinR,120);
+  analogWrite(speedPinL,255);
+  analogWrite(speedPinR,255);
   delay(t);
 }
 void stop_Stop()    //Stop
