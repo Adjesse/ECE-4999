@@ -103,14 +103,21 @@ while(phase3)
 {
   limitSwitch_Bdown.loop();
   ServoUp.write(15);
+  Servo.ServoDown(180);
   Serial.println(limitSwitch_Bdown.isPressed());
 
   int state = limitSwitch_Bdown.getState();
   if(state == LOW)
   {
     ServoUp.write(90);
+    ServoDown.write(90);
     phase3 = 0;
   } 
+}
+
+while(phase4)
+{
+  
 }
 
 
