@@ -23,6 +23,9 @@ int turn_count = 0;
 int phase1 = 1;
 int phase2 = 0;
 int phase3 = 0;
+int phase4 = 0;
+unsigned long startTime;
+unsigned long duration_of_phase2;
 //Function Declarations
 int readDistance(int sensor);
 void lineTrack(Pixy2 pixy);
@@ -49,9 +52,6 @@ void setup()
 void loop()
 { 
  //lineTrack(pixy);
-
- 
-
 
 while(phase1)
 {
@@ -82,6 +82,7 @@ while(phase1)
         descent = 0;
         phase1 = 0;
         phase2 = 1;
+        startTime = millis();
       } 
   }
   }
@@ -93,6 +94,8 @@ while(phase2)
     //stop_Stop();
     phase2 = 0;
     phase3 = 1;
+    duration_of_phase2 = startTime - millis();
+
   }
   else
   {
@@ -117,6 +120,19 @@ while(phase3)
 
 while(phase4)
 {
+  startTime = millis();
+  if()
+  {
+    //stop_Stop();
+    phase2 = 0;
+    phase3 = 1;
+    duration_of_phase2 = startTime - millis();
+
+  }
+  else
+  {
+    //go_Advance();
+  }
   
 }
 
