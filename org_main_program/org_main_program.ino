@@ -26,6 +26,7 @@ int phase3 = 0;
 int phase4 = 0;
 unsigned long startTime;
 unsigned long duration_of_phase2;
+unsigned long duration_of_phase1;
 //Function Declarations
 int readDistance(int sensor);
 void lineTrack(Pixy2 pixy);
@@ -52,23 +53,23 @@ void setup()
 void loop()
 { 
  //lineTrack(pixy);
-
 while(phase1)
 {
   // limitSwitch.loop();
   // Serial.println(limitSwitch.isPressed());
   // delay(1000);
-  Serial.print("Front: ");
-  Serial.println(readDistance(front_sensor));
-  Serial.print("Back: ");
-  Serial.println(readDistance(back_sensor));
-  delay(1000);
+  // Serial.print("Front: ");
+  // Serial.println(readDistance(front_sensor));
+  // Serial.print("Back: ");
+  // Serial.println(readDistance(back_sensor));
+  // delay(1000);
 
   
   if(readDistance(front_sensor) > 20)
   {
 
     int descent = 1;
+    startTime = millis();
     while(descent)
     { 
       limitSwitch_Cdown.loop();
@@ -79,6 +80,7 @@ while(phase1)
       if(state == LOW)
       {
         ServoDown.write(90);
+        duration_of_phase1 = millis() - startTime;
         descent = 0;
         phase1 = 0;
         phase2 = 1;
@@ -94,7 +96,7 @@ while(phase2)
     //stop_Stop();
     phase2 = 0;
     phase3 = 1;
-    duration_of_phase2 = startTime - millis();
+    duration_of_phase2 = millis() - startTime;
 
   }
   else
@@ -118,21 +120,17 @@ while(phase3)
   } 
 }
 
+//Move Body A down
 while(phase4)
 {
-  startTime = millis();
-  if()
-  {
-    //stop_Stop();
-    phase2 = 0;
-    phase3 = 1;
-    duration_of_phase2 = startTime - millis();
+  go_Advance();               //Move Forward for same time as phase 2
+  delay(duration_of_phase2);
+  stop_Stop();                //Stop to lower
+  ServoUp.write(180);         //Lower for same time as phase 1 (body C)
+  delay(duration_of_phase1);
+  ServoUp.write(90);
+  phase4 = 0;
 
-  }
-  else
-  {
-    //go_Advance();
-  }
   
 }
 
