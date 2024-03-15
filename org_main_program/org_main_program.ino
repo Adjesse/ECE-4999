@@ -72,31 +72,31 @@ while(phase1)
     startTime = millis();
     while(descent)
     { 
-      limitSwitch_Cdown.loop();
-      ServoDown.write(15);
-      Serial.println(limitSwitch_Cdown.isPressed());
+      limitSwitch_Cdown.loop();                        //Must call first
+      ServoDown.write(15);                             //Descend Body C 
+      //Serial.println(limitSwitch_Cdown.isPressed());
 
-      int state = limitSwitch_Cdown.getState();
-      if(state == LOW)
+      int state = limitSwitch_Cdown.getState();   
+      if(state == LOW)                              //If button is pressed or ServoDown is at top of rack
       {
-        ServoDown.write(90);
-        duration_of_phase1 = millis() - startTime;
-        descent = 0;
-        phase1 = 0;
-        phase2 = 1;
-        startTime = millis();
+        ServoDown.write(90);                        //Stop ServoDown Motor
+        duration_of_phase1 = millis() - startTime;  //Get Elapsed Time
+        descent = 0;                                //End descent loop 
+        phase1 = 0;                                 //End Phase 1 
+        phase2 = 1;                                 //Start Phase 2
+        startTime = millis();                       //Start Timer for Phase 2
       } 
   }
   }
 }
 while(phase2)
 {
-  if(readDistance(back_sensor) > 20)
+  if(readDistance(back_sensor) > 20)              //If Body B is off table
   {
-    //stop_Stop();
-    phase2 = 0;
-    phase3 = 1;
-    duration_of_phase2 = millis() - startTime;
+    //stop_Stop();                                //Stop Motors
+    phase2 = 0;                                   //End Phase 2
+    phase3 = 1;                                   //Start Phase 3
+    duration_of_phase2 = millis() - startTime;    //Get Elapsed Time for Phase 2
 
   }
   else
@@ -104,19 +104,20 @@ while(phase2)
     //go_Advance();
   }
 }
+//Move Body B down
 while(phase3)
 {
-  limitSwitch_Bdown.loop();
-  ServoUp.write(15);
-  Servo.ServoDown(180);
-  Serial.println(limitSwitch_Bdown.isPressed());
+  limitSwitch_Bdown.loop();                     //Must call first
+  ServoUp.write(15);                            //ServoUp ascend rack
+  Servo.ServoDown(180);                         //ServoDown descend rack
+  //Serial.println(limitSwitch_Bdown.isPressed());
 
   int state = limitSwitch_Bdown.getState();
-  if(state == LOW)
+  if(state == LOW)                              //If button is pressed or ServoUp is at top of rack
   {
-    ServoUp.write(90);
-    ServoDown.write(90);
-    phase3 = 0;
+    ServoUp.write(90);                          //Stop ServoUp Motor
+    ServoDown.write(90);                        //Stop ServoDown Motor
+    phase3 = 0;                                 //End Phase 3
   } 
 }
 
@@ -128,7 +129,7 @@ while(phase4)
   stop_Stop();                //Stop to lower
   ServoUp.write(180);         //Lower for same time as phase 1 (body C)
   delay(duration_of_phase1);
-  ServoUp.write(90);
+  ServoUp.write(90);          //Stop Servo
   phase4 = 0;
 
   
