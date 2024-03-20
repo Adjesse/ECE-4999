@@ -4,26 +4,31 @@
 #include <ezButton.h>
 #define front_sensor A0
 #define back_sensor A1
-#define ServoUpPin 3
+#define ServoUpPin 3  
 #define ServoDownPin 4
-#define ServoDownLimit 2
-#define ServoUpLimit 22
+#define Limit_C_Up 49
+#define Limit_C_Down 51
+#define Limit_B_Up 53
 
 
 // This is the main Pixy object 
 Pixy2 pixy;
 Servo ServoUp;  // Create a servo object
 Servo ServoDown;  // Create a servo object
-ezButton limitSwitch_Cdown(ServoDownLimit);
-ezButton limitSwitch_Bdown(ServoUpLimit);
+ezButton limitSwitch_C_Up(Limit_C_Up);
+ezButton limitSwitch_B_Up(Limit_B_Up);
+ezButton limitSwitch_C_Down(Limit_C_Down);
 //Global Variables
 int left_turn_count = 0;
 int right_turn_count = 0;
 int turn_count = 0;
-int phase1 = 1;
+int phase1 = 0;
 int phase2 = 0;
 int phase3 = 0;
 int phase4 = 0;
+int phase5 = 0;
+int phase6 = 0;
+int phase7 = 0;
 unsigned long startTime;
 unsigned long duration_of_phase2;
 unsigned long duration_of_phase1;
@@ -39,30 +44,39 @@ void setup()
   //pinMode(ServoDownLimit,INPUT);
   ServoUp.attach(ServoUpPin);  // Attach the servo
   ServoDown.attach(ServoDownPin);  // Attach the servo
-  limitSwitch_Cdown.setDebounceTime(50);
-  limitSwitch_Bdown.setDebounceTime(50);
+  limitSwitch_C_Up.setDebounceTime(50);
+  limitSwitch_B_Up.setDebounceTime(50);
   
-  //pixy.init();
+  pixy.init();
   init_GPIO();
-  //pixy.changeProg("CCC");
+  pixy.changeProg("CCC");
   //ServoDown.write(180);
   //delay(1000);
   //ServoDown.write(90);
+  // ServoDown.write(15);                            //ServoUp ascend rack
+  // delay(5000);
+  // ServoDown.write(90);
+
 }
 
 void loop()
-{ 
- //lineTrack(pixy);
-while(phase1)
 {
-  // limitSwitch.loop();
-  // Serial.println(limitSwitch.isPressed());
-  // delay(1000);
+
+  
   // Serial.print("Front: ");
   // Serial.println(readDistance(front_sensor));
   // Serial.print("Back: ");
   // Serial.println(readDistance(back_sensor));
   // delay(1000);
+ //lineTrack(pixy);
+while(phase1)
+{
+  Serial.println("Phase 1");
+  Serial.print("Front: ");
+  Serial.println(readDistance(front_sensor));
+  Serial.print("Back: ");
+  Serial.println(readDistance(back_sensor));
+  delay(1000);
 
   
   if(readDistance(front_sensor) > 20)
@@ -72,11 +86,11 @@ while(phase1)
     startTime = millis();
     while(descent)
     { 
-      limitSwitch_Cdown.loop();                        //Must call first
+      limitSwitch_C_Up.loop();                        //Must call first
       ServoDown.write(15);                             //Descend Body C 
       //Serial.println(limitSwitch_Cdown.isPressed());
 
-      int state = limitSwitch_Cdown.getState();   
+      int state = limitSwitch_C_Up.getState();   
       if(state == LOW)                              //If button is pressed or ServoDown is at top of rack
       {
         ServoDown.write(90);                        //Stop ServoDown Motor
@@ -91,9 +105,10 @@ while(phase1)
 }
 while(phase2)
 {
+  Serial.println("Phase 2");
   if(readDistance(back_sensor) > 20)              //If Body B is off table
   {
-    //stop_Stop();                                //Stop Motors
+    stop_Stop();                                //Stop Motors
     phase2 = 0;                                   //End Phase 2
     phase3 = 1;                                   //Start Phase 3
     duration_of_phase2 = millis() - startTime;    //Get Elapsed Time for Phase 2
@@ -101,29 +116,32 @@ while(phase2)
   }
   else
   {
-    //go_Advance();
+    go_Advance();
   }
 }
 //Move Body B down
 while(phase3)
 {
-  limitSwitch_Bdown.loop();                     //Must call first
+  Serial.println("Phase 3");
+  limitSwitch_B_Up.loop();                     //Must call first
   ServoUp.write(15);                            //ServoUp ascend rack
-  Servo.ServoDown(180);                         //ServoDown descend rack
+  ServoDown.write(180);                         //ServoDown descend rack
   //Serial.println(limitSwitch_Bdown.isPressed());
 
-  int state = limitSwitch_Bdown.getState();
+  int state = limitSwitch_B_Up.getState();
   if(state == LOW)                              //If button is pressed or ServoUp is at top of rack
   {
     ServoUp.write(90);                          //Stop ServoUp Motor
     ServoDown.write(90);                        //Stop ServoDown Motor
     phase3 = 0;                                 //End Phase 3
+    phase4 = 1;
   } 
 }
 
 //Move Body A down
 while(phase4)
 {
+  Serial.println("Phase 4");
   go_Advance();               //Move Forward for same time as phase 2
   delay(duration_of_phase2);
   stop_Stop();                //Stop to lower
@@ -135,7 +153,48 @@ while(phase4)
   
 }
 
+while(phase5)
+{
+  
 
+
+}
+
+while(phase6)
+{
+  Serial.println("Phase 6");
+  limitSwitch_B_Up.loop();                     //Must call first
+  ServoUp.write(0);                            //ServoUp ascend rack
+  
+  int state = limitSwitch_B_Up.getState();
+  if(state == LOW)                              //If button is pressed or ServoUp is at top of rack
+  {
+    ServoUp.write(90);                          //Stop ServoUp Motor
+    phase6 = 0;                                 //End Phase 6
+    phase7 = 1;
+  }
+  
+}
+while(phase7)
+{
+  //Move Body B down
+  delay(5000);
+  Serial.println("Phase 7");
+  limitSwitch_B_Up.loop();                        //Must call first
+  ServoUp.write(180);                             //ServoUp descend rack
+  ServoDown.write(0);                             //ServoDown ascend rack
+
+  int state = limitSwitch_C_Up.getState();
+  if(state == LOW)                              //If button is pressed or ServoUp is at top of rack
+  {
+    ServoUp.write(90);                          //Stop ServoUp Motor
+    ServoDown.write(90);                        //Stop ServoDown Motor
+    phase7 = 0;                                 //End Phase 7
+  } 
+
+
+
+}
 
 
 
@@ -194,7 +253,7 @@ void lineTrack(Pixy2 pixy)
   // If there are detect blocks, print them!
   if (pixy.ccc.numBlocks)
   {
-    // Serial.print("Detected ");
+    Serial.print("Detected ");
     // Serial.println(pixy.ccc.numBlocks);
     //Serial.print("Center X: ");
     //Serial.println(pixy.ccc.blocks[0].m_x);
@@ -210,17 +269,17 @@ void lineTrack(Pixy2 pixy)
       if(pixy.ccc.blocks[0].m_x > 150)
       {
         //Serial.println("Turn Right: ");
-        go_Right(900);
+        go_Right(5000);
         go_Advance();
-        delay(700); 
+        delay(1000); 
         right_turn_count++;
       }
       else if(pixy.ccc.blocks[0].m_x < 150)
       {
         //Serial.println("Turn Left: ");
-        go_Left(900);
+        go_Left(5000);
         go_Advance();
-        delay(700); 
+        delay(1000);    
         left_turn_count++;
 
       }

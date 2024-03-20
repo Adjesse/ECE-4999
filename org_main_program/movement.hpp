@@ -11,41 +11,41 @@
 /*motor control*/
 void go_Advance(void)  //Forward
 {
-  digitalWrite(RightMotorDirPin1, HIGH);
-  digitalWrite(RightMotorDirPin2,LOW);
+  digitalWrite(RightMotorDirPin1, LOW);
+  digitalWrite(RightMotorDirPin2,HIGH);
   digitalWrite(LeftMotorDirPin1,HIGH);
   digitalWrite(LeftMotorDirPin2,LOW);
-  analogWrite(speedPinL,120 );
-  analogWrite(speedPinR,120);
+  analogWrite(speedPinL,255 );
+  analogWrite(speedPinR,255);
 }
 void go_Left(int t=0)  //Turn left
 {
-  digitalWrite(RightMotorDirPin1, HIGH);
-  digitalWrite(RightMotorDirPin2,LOW);
+  digitalWrite(RightMotorDirPin1, LOW);
+  digitalWrite(RightMotorDirPin2,HIGH);
   digitalWrite(LeftMotorDirPin1,LOW);
   digitalWrite(LeftMotorDirPin2,HIGH);
-  analogWrite(speedPinL,120);
-  analogWrite(speedPinR,120);
+  analogWrite(speedPinL,255);
+  analogWrite(speedPinR,255);
   delay(t);
 }
 void go_Right(int t=0)  //Turn right
 {
-  digitalWrite(RightMotorDirPin1, LOW);
-  digitalWrite(RightMotorDirPin2,HIGH);
+  digitalWrite(RightMotorDirPin1, HIGH);
+  digitalWrite(RightMotorDirPin2,LOW);
   digitalWrite(LeftMotorDirPin1,HIGH);
   digitalWrite(LeftMotorDirPin2,LOW);
-  analogWrite(speedPinL,120);
-  analogWrite(speedPinR,120);
+  analogWrite(speedPinL,255);
+  analogWrite(speedPinR,255);
   delay(t);
 }
 void go_Back(int t=0)  //Reverse
 {
-  digitalWrite(RightMotorDirPin1, LOW);
-  digitalWrite(RightMotorDirPin2,HIGH);
+  digitalWrite(RightMotorDirPin1, HIGH);
+  digitalWrite(RightMotorDirPin2,LOW);
   digitalWrite(LeftMotorDirPin1,LOW);
   digitalWrite(LeftMotorDirPin2,HIGH);
-  analogWrite(speedPinL,120);
-  analogWrite(speedPinR,120);
+  analogWrite(speedPinL,255);
+  analogWrite(speedPinR,255);
   delay(t);
 }
 void stop_Stop()    //Stop
