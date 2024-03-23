@@ -6,10 +6,10 @@
 #define back_sensor A1
 #define ServoUpPin 3  
 #define ServoDownPin 4
-#define Limit_C_Up 49
-#define Limit_C_Down 51
-#define Limit_B_Up 53
-
+#define Limit_C_Up 43
+#define Limit_C_Down 45
+#define Limit_B_Up 47
+//Pin 51 is not working
 
 // This is the main Pixy object 
 Pixy2 pixy;
@@ -27,7 +27,7 @@ int phase2 = 0;
 int phase3 = 0;
 int phase4 = 0;
 int phase5 = 0;
-int phase6 = 0;
+int phase6 = 1;
 int phase7 = 0;
 unsigned long startTime;
 unsigned long duration_of_phase2;
@@ -46,6 +46,7 @@ void setup()
   ServoDown.attach(ServoDownPin);  // Attach the servo
   limitSwitch_C_Up.setDebounceTime(50);
   limitSwitch_B_Up.setDebounceTime(50);
+  limitSwitch_C_Down.setDebounceTime(50);
   
   pixy.init();
   init_GPIO();
@@ -61,6 +62,14 @@ void setup()
 
 void loop()
 {
+  
+  // limitSwitch_C_Down.loop();
+  // int state_down = limitSwitch_C_Down.getState();
+  // Serial.println(state_down);
+  // delay(1000);
+
+
+  
 
   
   // Serial.print("Front: ");
@@ -87,7 +96,7 @@ while(phase1)
     while(descent)
     { 
       limitSwitch_C_Up.loop();                        //Must call first
-      ServoDown.write(15);                             //Descend Body C 
+      ServoDown.write(0);                             //Descend Body C 
       //Serial.println(limitSwitch_Cdown.isPressed());
 
       int state = limitSwitch_C_Up.getState();   
@@ -124,11 +133,20 @@ while(phase3)
 {
   Serial.println("Phase 3");
   limitSwitch_B_Up.loop();                     //Must call first
-  ServoUp.write(15);                            //ServoUp ascend rack
+  limitSwitch_C_Down.loop();
+
   ServoDown.write(180);                         //ServoDown descend rack
+  ServoUp.write(0);                            //ServoUp ascend rack
   //Serial.println(limitSwitch_Bdown.isPressed());
 
   int state = limitSwitch_B_Up.getState();
+  int state_down = limitSwitch_C_Down.getState();
+  //Serial.println(state_down);
+
+  if(state_down == LOW)
+  {
+    ServoDown.write(90);                        //Stop ServoDown Motor
+  }
   if(state == LOW)                              //If button is pressed or ServoUp is at top of rack
   {
     ServoUp.write(90);                          //Stop ServoUp Motor
@@ -177,20 +195,32 @@ while(phase6)
 }
 while(phase7)
 {
-  //Move Body B down
-  delay(5000);
   Serial.println("Phase 7");
+
+  while(readDistance(back_sensor) > 20)
+  {
+    Serial.println("Go Back");
+    go_Back();
+  }
+  stop_Stop();
+  
   limitSwitch_B_Up.loop();                        //Must call first
   ServoUp.write(180);                             //ServoUp descend rack
   ServoDown.write(0);                             //ServoDown ascend rack
 
-  int state = limitSwitch_C_Up.getState();
+  int state = limitSwitch_B_Up.getState();
+  int state_down = limitSwitch_C_Up.getState();
   if(state == LOW)                              //If button is pressed or ServoUp is at top of rack
   {
     ServoUp.write(90);                          //Stop ServoUp Motor
     ServoDown.write(90);                        //Stop ServoDown Motor
     phase7 = 0;                                 //End Phase 7
   } 
+  if(state_down == LOW)
+  {
+    ServoDown.write(90);                        //Stop ServoDown Motor
+
+  }
 
 
 
@@ -269,17 +299,19 @@ void lineTrack(Pixy2 pixy)
       if(pixy.ccc.blocks[0].m_x > 150)
       {
         //Serial.println("Turn Right: ");
-        go_Right(5000);
+        delay(1000);
+        go_Right(3000);
         go_Advance();
-        delay(1000); 
+        delay(900); 
         right_turn_count++;
       }
       else if(pixy.ccc.blocks[0].m_x < 150)
       {
         //Serial.println("Turn Left: ");
-        go_Left(5000);
+        delay(1000);
+        go_Left(3000);
         go_Advance();
-        delay(1000);    
+        delay(900);    
         left_turn_count++;
 
       }
