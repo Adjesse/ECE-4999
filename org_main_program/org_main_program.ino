@@ -29,6 +29,7 @@ int phase4 = 0;
 int phase5 = 0;
 int phase6 = 1;
 int phase7 = 0;
+int phase8 = 0;
 unsigned long startTime;
 unsigned long duration_of_phase2;
 unsigned long duration_of_phase1;
@@ -66,10 +67,6 @@ void loop()
   // limitSwitch_C_Down.loop();
   // int state_down = limitSwitch_C_Down.getState();
   // Serial.println(state_down);
-  // delay(1000);
-
-
-  
 
   
   // Serial.print("Front: ");
@@ -197,34 +194,79 @@ while(phase7)
 {
   Serial.println("Phase 7");
 
-  while(readDistance(back_sensor) > 20)
+  while(readDistance(back_sensor) > 10)
   {
-    Serial.println("Go Back");
     go_Back();
   }
+
   stop_Stop();
   
-  limitSwitch_B_Up.loop();                        //Must call first
+  limitSwitch_C_Up.loop();                        //Must call first
   ServoUp.write(180);                             //ServoUp descend rack
   ServoDown.write(0);                             //ServoDown ascend rack
 
-  int state = limitSwitch_B_Up.getState();
+  //int state = limitSwitch_B_Up.getState();
   int state_down = limitSwitch_C_Up.getState();
-  if(state == LOW)                              //If button is pressed or ServoUp is at top of rack
+ 
+  if(state_down == LOW)
   {
     ServoUp.write(90);                          //Stop ServoUp Motor
     ServoDown.write(90);                        //Stop ServoDown Motor
-    phase7 = 0;                                 //End Phase 7
-  } 
-  if(state_down == LOW)
-  {
-    ServoDown.write(90);                        //Stop ServoDown Motor
+    while(readDistance(front_sensor) > 10)
+    {
+        go_Back();
+    }
+    stop_Stop();
 
+    phase7 = 0; 
+    phase8 = 1;
   }
 
 
 
 }
+  limitSwitch_C_Down.loop();                        //Must call first
+  int phase8_state = limitSwitch_C_Down.getState();
+do
+{
+
+  
+  ServoDown.write(180);                             //ascend Body C
+  Serial.println(phase8_state);
+} while(phase8 && phase8_state == HIGH);
+
+if(phase8_state == LOW)
+  {
+    Serial.println("if statement");
+    ServoDown.write(90);                            //Stop Servo Down
+    go_Back();
+    delay(1000);
+    stop_Stop();
+    phase8 = 0;
+  }
+
+//while(phase8)
+//{
+//  Serial.println("Phase 8");
+//  
+ // limitSwitch_C_Down.loop();                        //Must call first
+  //int phase8_state = limitSwitch_C_Down.getState();
+  
+  //ServoDown.write(180);                             //ascend Body C
+  //Serial.println(phase8_state);
+  //delay(12000);
+ // if(phase8_state == LOW)
+  //{
+   // Serial.println("if statement");
+    //ServoDown.write(90);                            //Stop Servo Down
+    //go_Back();
+    //delay(1000);
+    //stop_Stop();
+    //phase8 = 0;
+  //}
+
+
+//}
 
 
 
