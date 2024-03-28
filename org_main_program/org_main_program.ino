@@ -229,8 +229,6 @@ while(phase7)
   int phase8_state = limitSwitch_C_Down.getState();
 do
 {
-
-  
   ServoDown.write(180);                             //ascend Body C
   Serial.println(phase8_state);
 } while(phase8 && phase8_state == HIGH);
@@ -239,12 +237,14 @@ if(phase8_state == LOW)
   {
     Serial.println("if statement");
     ServoDown.write(90);                            //Stop Servo Down
-    go_Back();
-    delay(1000);
     stop_Stop();
     phase8 = 0;
+    ServoDown.write(90);
+    go_Back();
+    delay(1500);
+    ;
   }
-
+ 
 //while(phase8)
 //{
 //  Serial.println("Phase 8");
